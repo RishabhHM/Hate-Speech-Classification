@@ -1,4 +1,8 @@
 # Folders
 myenv
 hate_speech_classification*
+google-cloud-sdk
 logs
+
+# Files
+.DS_Store
