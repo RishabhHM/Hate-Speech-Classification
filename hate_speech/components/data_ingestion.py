@@ -14,7 +14,7 @@ class DataIngestion:
     
 
     def get_data_from_gcloud(self) -> None:
-        logging.info("Executing get_data_from_gcloud method of Data Ingestion class")
+        logging.info("Executing get_data_from_gcloud method of DataIngestion class")
         try:
             os.makedirs(self.data_ingestion_config.DATA_INGESTION_ARTIFACTS_DIR, exist_ok=True)
 
@@ -22,18 +22,18 @@ class DataIngestion:
                                                 self.data_ingestion_config.ZIP_FILE_NAME,
                                                 self.data_ingestion_config.DATA_INGESTION_ARTIFACTS_DIR
                                                 )
-            logging.info("Exiting get_data_from_gcloud method of Data Ingestion Class")
+            logging.info("Exiting get_data_from_gcloud method of DataIngestion Class")
             
         except Exception as e:
             raise CustomException(e, sys) from e
 
 
     def upzip_and_clean(self):
-        logging.info("Executing upzip_and_clean method of Data Ingestion class")
+        logging.info("Executing upzip_and_clean method of DataIngestion class")
         try:
             with ZipFile(self.data_ingestion_config.ZIP_FILE_PATH, 'r') as zip_ref:
                 zip_ref.extractall(self.data_ingestion_config.ZIP_FILE_DIR)
-            logging.info("Exiting upzip_and_clean method of Data Ingestion Class")
+            logging.info("Exiting upzip_and_clean method of DataIngestion Class")
 
             return self.data_ingestion_config.IMB_DATA_ARTIFACTS_DIR, self.data_ingestion_config.RAW_DATA_ARTIFACTS_DIR
 
@@ -60,7 +60,7 @@ class DataIngestion:
                 raw_data_file_path = raw_data_file_path
             )
 
-            logging.info("Exiting initiate_data_ingestion method of Data Ingestion Class")
+            logging.info("Exiting initiate_data_ingestion method of DataIngestion Class")
             logging.info("Data Ingestion Artifact: {}".format(data_ingestion_artifacts))
 
             return data_ingestion_artifacts
