@@ -4,9 +4,8 @@ hate_speech_classification*
 google-cloud-sdk
 logs
 data
+artifacts/*
 
 # Files
 .DS_Store
-hate_speech/configuration/__pycache__/
-hate_speech/exception/__pycache__/
-hate_speech/logger/__pycache__/
+*__pycache__*
