@@ -1,16 +1,23 @@
+# Fundamental Libraries
 import sys
 import time
+
+# Custom Libraries
 from hate_speech.logger import logging
 from hate_speech.exception import CustomException
+
+# Custom Libraries for Building Pipeline
 from hate_speech.components.data_ingestion import DataIngestion
 from hate_speech.components.data_validation import DataValidation
-from hate_speech.entity.config_entity import DataIngestionConfig
-from hate_speech.entity.artifact_entity import DataIngestionArtifacts
+from hate_speech.components.data_transformation import DataTransformation
+from hate_speech.entity.config_entity import DataIngestionConfig, DataTransformationConfig
+from hate_speech.entity.artifact_entity import DataIngestionArtifacts, DataTransformationArtifacts
 
 class TrainPipeline:
     def __init__(self) -> None:
         self.data_ingestion_config = DataIngestionConfig()
-    
+        self.data_transformation_config = DataTransformationConfig()
+
     
     def start_data_ingestion(self) -> DataIngestionArtifacts:
         logging.info("Entered the start_data_ingestion method of TrainPipeline class")
@@ -37,16 +44,41 @@ class TrainPipeline:
         
         except Exception as e:
             raise CustomException(e, sys) from e
+        
+    
+    def start_data_transformation(self, data_ingestion_artifacts = DataIngestionArtifacts) -> DataTransformationArtifacts:
+        logging.info("Entered start_data_transformation method of TrainPipeline class")
+        try:
+            data_transformation = DataTransformation(self.data_transformation_config, data_ingestion_artifacts)
+            data_transformation_artifacts = data_transformation.initiate_data_transformation()
+            logging.info("Exiting start_data_transformation method of TrainPipeline class")
+            return data_transformation_artifacts
+        
+        except Exception as e:
+            raise CustomException(e, sys) from e
+
 
 
     def run_pipeline(self):
         logging.info("Entered the run_pipeline method of TrainPipeline class")
         try:
+            print("***** Starting Data Ingestion *****")
             data_ingestion_artifacts = self.start_data_ingestion()
-            
+            print("***** Completed Data Ingestion *****")
+            print("\n\n")
+
+            print("***** Starting Data Validation *****")
             time.sleep(3)
             print("Loading Data...")
             self.start_data_validation(data_ingestion_artifacts)
+            print("***** Completed Data Validation *****")
+            print("\n\n")
+
+            print("***** Starting Data Transformation *****")
+            data_transformation_artifacts = self.start_data_transformation(data_ingestion_artifacts=data_ingestion_artifacts)
+            print("***** Completed Data Transformation *****")
+            print("\n\n")
+
             logging.info("Exiting run_pipeline method of TrainPipeline class")
         
         except Exception as e:
