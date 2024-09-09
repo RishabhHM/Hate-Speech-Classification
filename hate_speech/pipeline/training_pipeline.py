@@ -10,13 +10,15 @@ from hate_speech.exception import CustomException
 from hate_speech.components.data_ingestion import DataIngestion
 from hate_speech.components.data_validation import DataValidation
 from hate_speech.components.data_transformation import DataTransformation
-from hate_speech.entity.config_entity import DataIngestionConfig, DataTransformationConfig
-from hate_speech.entity.artifact_entity import DataIngestionArtifacts, DataTransformationArtifacts
+from hate_speech.components.model_trainer import ModelTrainer
+from hate_speech.entity.config_entity import DataIngestionConfig, DataTransformationConfig, ModelTrainerConfig
+from hate_speech.entity.artifact_entity import DataIngestionArtifacts, DataTransformationArtifacts, ModelTrainerArtifacts
 
 class TrainPipeline:
     def __init__(self) -> None:
         self.data_ingestion_config = DataIngestionConfig()
         self.data_transformation_config = DataTransformationConfig()
+        self.model_trainer_config = ModelTrainerConfig()
 
     
     def start_data_ingestion(self) -> DataIngestionArtifacts:
@@ -56,6 +58,18 @@ class TrainPipeline:
         
         except Exception as e:
             raise CustomException(e, sys) from e
+    
+
+    def start_model_training(self, data_transformation_artifacts: DataTransformationArtifacts) -> ModelTrainerArtifacts:
+        logging.info("Entered start_model_training method of TrainPipeline class")
+        try:
+            model_trainer = ModelTrainer(data_transformation_artifacts, model_trainer_config=self.model_trainer_config)
+            model_trainer_artifacts = model_trainer.initiate_model_trainer()
+            logging.info("Exiting start_model_training method of TrainPipeline class")
+            return model_trainer_artifacts
+        
+        except Exception as e:
+            raise CustomException(e, sys) from e
 
 
 
@@ -77,6 +91,11 @@ class TrainPipeline:
             print("***** Starting Data Transformation *****")
             data_transformation_artifacts = self.start_data_transformation(data_ingestion_artifacts=data_ingestion_artifacts)
             print("***** Completed Data Transformation *****")
+            print("\n\n")
+
+            print("***** Starting Model Training *****")
+            data_transformation_artifacts = self.start_model_training(data_transformation_artifacts=data_transformation_artifacts)
+            print("***** Completed Model Training *****")
             print("\n\n")
 
             logging.info("Exiting run_pipeline method of TrainPipeline class")
