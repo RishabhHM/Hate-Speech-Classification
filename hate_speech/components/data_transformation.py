@@ -34,6 +34,7 @@ class DataTransformation:
                 inplace=self.data_transformation_config.INPLACE
                 )
             logging.info("Exiting imbalanced_data_cleaning method of DataTransformation Class")
+            return imbalanced_data
         
         except Exception as e:
             raise CustomException(e, sys) from e
@@ -87,7 +88,6 @@ class DataTransformation:
 
     # Function to perform Text-Preprocessing
     def concat_data_cleaning(self, sentence):
-        logging.info("Executing concat_data_cleaning method of DataTransformation class")
         try:
             # Applying stemming and stopwords on the data
             stemmer = nltk.SnowballStemmer("english")
@@ -109,23 +109,24 @@ class DataTransformation:
             sentence = re.sub('\n', '', sentence) # removes all line brakes
             sentence = re.sub('\w*\d\w*', '', sentence) # removes all words that have number in them
 
-            logging.info("Exiting concat_data_cleaning method of DataTransformation Class")
             return sentence
 
         except Exception as e:
             raise CustomException(e, sys) from e
 
 
-    # New Function
     def initiate_data_transformation(self):
         logging.info("Executing initiate_data_transformation method of DataTransformation class")
         try:
             df = self.concat_dataframe()
+
+            logging.info("Executing concat_data_cleaning method of DataTransformation class")
             df[self.data_transformation_config.TWEET]=df[self.data_transformation_config.TWEET].apply(self.concat_data_cleaning)
+            logging.info("Exiting concat_data_cleaning method of DataTransformation Class")
 
             os.makedirs(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR, exist_ok=True)
+            
             df.to_csv(self.data_transformation_config.TRANSFORMED_FILE_PATH, index=False, header=True)
-
             data_transformation_artifact = DataTransformationArtifacts(
                 transformed_data_path = self.data_transformation_config.TRANSFORMED_FILE_PATH
             )
